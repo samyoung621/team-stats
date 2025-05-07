@@ -1,71 +1,439 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <title>球員打擊成績表</title>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      margin: 40px;
-      background: #f4f4f4;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    th, td {
-      padding: 10px;
-      text-align: center;
-      border: 1px solid #ccc;
-    }
-    th {
-      background-color: #f8f8f8;
-      font-weight: bold;
-    }
-    .strong-performance {
-      background-color: #ffeeba;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隊伍統計表格</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-family: sans-serif;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #d3d3d3;
+        }
+        .highlight {
+            background-color: yellow;
+        }
+        .total {
+            background-color: #ff4040;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-  <h2>球員打擊成績表</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>背號</th><th>姓名</th><th>安打數</th><th>打數</th><th>打擊率</th>
-        <th>打點</th><th>一壘安打</th><th>二壘安打</th><th>三壘安打</th><th>全壘打</th>
-        <th>三振</th><th>四壞球</th><th>上壘率</th><th>長打率</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- 表格資料開始 -->
-      <tr class="strong-performance"><td>59</td><td>小周</td><td>16</td><td>29</td><td>0.552</td><td>4</td><td>12</td><td>3</td><td>1</td><td>0</td><td>1</td><td>4</td><td>0.606</td><td>0.724</td></tr>
-      <tr class="strong-performance"><td>27</td><td>峰榮</td><td>12</td><td>26</td><td>0.462</td><td>6</td><td>11</td><td>0</td><td>1</td><td>0</td><td>1</td><td>2</td><td>0.481</td><td>0.615</td></tr>
-      <tr class="strong-performance"><td>14</td><td>小花</td><td>8</td><td>18</td><td>0.444</td><td>2</td><td>7</td><td>1</td><td>0</td><td>0</td><td>4</td><td>0</td><td>0.545</td><td>0.500</td></tr>
-      <tr class="strong-performance"><td>1</td><td>嘉桓</td><td>17</td><td>18</td><td>0.824</td><td>6</td><td>14</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.850</td><td>0.824</td></tr>
-      <tr class="strong-performance"><td>69</td><td>羿子</td><td>9</td><td>18</td><td>0.500</td><td>5</td><td>8</td><td>1</td><td>0</td><td>0</td><td>2</td><td>2</td><td>0.550</td><td>0.611</td></tr>
-      <tr><td>6</td><td>柏勳</td><td>10</td><td>29</td><td>0.345</td><td>1</td><td>6</td><td>1</td><td>0</td><td>0</td><td>3</td><td>3</td><td>0.387</td><td>0.414</td></tr>
-      <tr><td>3</td><td>江大</td><td>10</td><td>20</td><td>0.500</td><td>0</td><td>9</td><td>1</td><td>0</td><td>0</td><td>3</td><td>1</td><td>0.550</td><td>0.550</td></tr>
-      <tr><td>95</td><td>光義</td><td>5</td><td>20</td><td>0.250</td><td>1</td><td>3</td><td>1</td><td>1</td><td>0</td><td>3</td><td>2</td><td>0.318</td><td>0.400</td></tr>
-      <tr><td>41</td><td>逸宏</td><td>9</td><td>25</td><td>0.360</td><td>4</td><td>6</td><td>1</td><td>1</td><td>1</td><td>1</td><td>6</td><td>0.484</td><td>0.600</td></tr>
-      <tr><td>58</td><td>王大</td><td>3</td><td>15</td><td>0.200</td><td>4</td><td>3</td><td>0</td><td>0</td><td>0</td><td>1</td><td>3</td><td>0.333</td><td>0.200</td></tr>
-      <tr><td>25</td><td>子誠</td><td>6</td><td>14</td><td>0.429</td><td>2</td><td>2</td><td>2</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0.556</td><td>0.714</td></tr>
-      <tr><td>7</td><td>致凱</td><td>9</td><td>21</td><td>0.429</td><td>3</td><td>5</td><td>0</td><td>0</td><td>4</td><td>0</td><td>0</td><td>0.500</td><td>0.714</td></tr>
-      <tr><td>39</td><td>懷恩</td><td>7</td><td>15</td><td>0.467</td><td>2</td><td>5</td><td>2</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0.571</td><td>0.455</td></tr>
-      <tr><td>82</td><td>正潔</td><td>7</td><td>18</td><td>0.389</td><td>2</td><td>7</td><td>0</td><td>0</td><td>0</td><td>3</td><td>5</td><td>0.522</td><td>0.389</td></tr>
-      <tr><td>5</td><td>興倫</td><td>4</td><td>18</td><td>0.222</td><td>2</td><td>2</td><td>2</td><td>0</td><td>0</td><td>3</td><td>1</td><td>0.263</td><td>0.222</td></tr>
-      <tr><td>99</td><td>良全</td><td>10</td><td>20</td><td>0.500</td><td>2</td><td>6</td><td>3</td><td>0</td><td>1</td><td>3</td><td>1</td><td>0.545</td><td>0.500</td></tr>
-      <tr class="strong-performance"><td>17</td><td>盟義</td><td>7</td><td>15</td><td>0.467</td><td>3</td><td>5</td><td>1</td><td>1</td><td>0</td><td>2</td><td>1</td><td>0.467</td><td>0.733</td></tr>
-      <tr class="strong-performance"><td>22</td><td>亦凌</td><td>9</td><td>17</td><td>0.529</td><td>2</td><td>5</td><td>2</td><td>0</td><td>2</td><td>1</td><td>1</td><td>0.545</td><td>0.714</td></tr>
-      <tr><td>44</td><td>阿賢</td><td>7</td><td>13</td><td>0.538</td><td>3</td><td>6</td><td>1</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0.600</td><td>0.462</td></tr>
-      <tr><td>81</td><td>証然</td><td>4</td><td>20</td><td>0.200</td><td>1</td><td>3</td><td>1</td><td>0</td><td>0</td><td>0</td><td>4</td><td>0.429</td><td>0.200</td></tr>
-      <tr><td>21</td><td>威吾</td><td>5</td><td>14</td><td>0.357</td><td>2</td><td>5</td><td>0</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0.438</td><td>0.357</td></tr>
-      <tr><td>51</td><td>Allen</td><td>4</td><td>8</td><td>0.500</td><td>1</td><td>4</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.500</td><td>0.500</td></tr>
-      <tr class="strong-performance"><td>0</td><td>興明</td><td>1</td><td>2</td><td>0.500</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.500</td><td>0.833</td></tr>
-      <!-- 表格資料結束 -->
-    </tbody>
-  </table>
+    <table>
+        <thead>
+            <tr>
+                <th>局數</th>
+                <th>姓名</th>
+                <th>安打數</th>
+                <th>打數</th>
+                <th>打擊率</th>
+                <th>打點</th>
+                <th>全壘打</th>
+                <th>一壘安打</th>
+                <th>二壘安打</th>
+                <th>三壘安打</th>
+                <th>全壘打</th>
+                <th>三振</th>
+                <th>四壞球</th>
+                <th>上壘率</th>
+                <th>長打率</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>59</td>
+                <td>小周</td>
+                <td class="highlight">16</td>
+                <td class="highlight">29</td>
+                <td>0.552</td>
+                <td>4</td>
+                <td>12</td>
+                <td class="highlight">3</td>
+                <td class="highlight">1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>4</td>
+                <td>0.606</td>
+                <td class="highlight">0.724</td>
+            </tr>
+            <tr>
+                <td>27</td>
+                <td>峰榮</td>
+                <td>12</td>
+                <td>26</td>
+                <td>0.462</td>
+                <td>6</td>
+                <td>10</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="highlight">1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0.481</td>
+                <td>0.615</td>
+            </tr>
+            <tr>
+                <td>14</td>
+                <td>小花</td>
+                <td>8</td>
+                <td>18</td>
+                <td>0.444</td>
+                <td>5</td>
+                <td>7</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>4</td>
+                <td>0.545</td>
+                <td>0.500</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>嘉桓</td>
+                <td>14</td>
+                <td>22</td>
+                <td class="highlight">0.636</td>
+                <td>6</td>
+                <td class="highlight">14</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>3</td>
+                <td class="highlight">0.680</td>
+                <td class="highlight">0.636</td>
+            </tr>
+            <tr>
+                <td>69</td>
+                <td>舜子</td>
+                <td>9</td>
+                <td>18</td>
+                <td>0.500</td>
+                <td>5</td>
+                <td>8</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0.550</td>
+                <td>0.611</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>柏誠</td>
+                <td>10</td>
+                <td class="highlight">29</td>
+                <td>0.345</td>
+                <td>7</td>
+                <td>9</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>3</td>
+                <td>2</td>
+                <td>0.387</td>
+                <td>0.414</td>
+            </tr>
+            <tr>
+                <td>93</td>
+                <td>江大</td>
+                <td>3</td>
+                <td>10</td>
+                <td>0.300</td>
+                <td>0</td>
+                <td>3</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>2</td>
+                <td>3</td>
+                <td>0.462</td>
+                <td>0.300</td>
+            </tr>
+            <tr>
+                <td>95</td>
+                <td>光義</td>
+                <td>5</td>
+                <td>20</td>
+                <td>0.250</td>
+                <td>1</td>
+                <td>3</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>3</td>
+                <td>2</td>
+                <td>0.318</td>
+                <td>0.400</td>
+            </tr>
+            <tr>
+                <td>41</td>
+                <td>逸宏</td>
+                <td>9</td>
+                <td>25</td>
+                <td>0.360</td>
+                <td>4</td>
+                <td>6</td>
+                <td>1</td>
+                <td>1</td>
+                <td class="highlight">1</td>
+                <td>1</td>
+                <td>6</td>
+                <td>0.484</td>
+                <td>0.600</td>
+            </tr>
+            <tr>
+                <td>58</td>
+                <td>王大</td>
+                <td>3</td>
+                <td>15</td>
+                <td>0.200</td>
+                <td>4</td>
+                <td>3</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>3</td>
+                <td>0.333</td>
+                <td>0.200</td>
+            </tr>
+            <tr>
+                <td>25</td>
+                <td>子誠</td>
+                <td>3</td>
+                <td>7</td>
+                <td>0.429</td>
+                <td>2</td>
+                <td>1</td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0.556</td>
+                <td>0.714</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>致濠</td>
+                <td>0</td>
+                <td>9</td>
+                <td>0.000</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="highlight">4</td>
+                <td>0</td>
+                <td>0.000</td>
+                <td>0.000</td>
+            </tr>
+            <tr>
+                <td>39</td>
+                <td>懷恩</td>
+                <td>5</td>
+                <td>11</td>
+                <td>0.455</td>
+                <td>2</td>
+                <td>5</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>2</td>
+                <td>3</td>
+                <td>0.571</td>
+                <td>0.455</td>
+            </tr>
+            <tr>
+                <td>82</td>
+                <td>正憲</td>
+                <td>7</td>
+                <td>18</td>
+                <td>0.389</td>
+                <td>2</td>
+                <td>7</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>1</td>
+                <td>5</td>
+                <td>0.522</td>
+                <td>0.389</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>與倫</td>
+                <td>4</td>
+                <td>18</td>
+                <td>0.222</td>
+                <td>2</td>
+                <td>4</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>3</td>
+                <td>1</td>
+                <td>0.263</td>
+                <td>0.222</td>
+            </tr>
+            <tr>
+                <td>99</td>
+                <td>良全</td>
+                <td>5</td>
+                <td>10</td>
+                <td>0.500</td>
+                <td>2</td>
+                <td>5</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>3</td>
+                <td>0.545</td>
+                <td>0.500</td>
+            </tr>
+            <tr>
+                <td>17</td>
+                <td>盟堯</td>
+                <td>7</td>
+                <td>15</td>
+                <td>0.467</td>
+                <td>2</td>
+                <td>6</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0.467</td>
+                <td>0.733</td>
+            </tr>
+            <tr>
+                <td>22</td>
+                <td>亦凌</td>
+                <td>11</td>
+                <td>21</td>
+                <td>0.524</td>
+                <td class="highlight">12</td>
+                <td>9</td>
+                <td>0</td>
+                <td class="highlight">2</td>
+                <td>0</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0.545</td>
+                <td>0.714</td>
+            </tr>
+            <tr>
+                <td>44</td>
+                <td>阿賢</td>
+                <td>7</td>
+                <td>13</td>
+                <td>0.538</td>
+                <td>3</td>
+                <td>6</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0.600</td>
+                <td>0.462</td>
+            </tr>
+            <tr>
+                <td>28</td>
+                <td>証然</td>
+                <td>2</td>
+                <td>10</td>
+                <td>0.200</td>
+                <td>1</td>
+                <td>2</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>4</td>
+                <td>0.429</td>
+                <td>0.200</td>
+            </tr>
+            <tr>
+                <td>21</td>
+                <td>威武</td>
+                <td>5</td>
+                <td>14</td>
+                <td>0.357</td>
+                <td>2</td>
+                <td>5</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0.438</td>
+                <td>0.357</td>
+            </tr>
+            <tr>
+                <td>51</td>
+                <td>ALLEN</td>
+                <td>4</td>
+                <td>8</td>
+                <td>0.500</td>
+                <td>1</td>
+                <td>4</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0.500</td>
+                <td>0.500</td>
+            </tr>
+            <tr>
+                <td>?</td>
+                <td>興顥</td>
+                <td>3</td>
+                <td>10</td>
+                <td>0.500</td>
+                <td>3</td>
+                <td>2</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td>0</td>
+                <td>0.300</td>
+                <td>0.500</td>
+            </tr>
+            <tr class="total">
+                <td>TOTAL</td>
+                <td>152</td>
+                <td>376</td>
+                <td>0.404</td>
+                <td>77</td>
+                <td>131</td>
+                <td>10</td>
+                <td>9</td>
+                <td>2</td>
+                <td>27</td>
+                <td>51</td>
+                <td>0.475</td>
+                <td>0.495</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>
