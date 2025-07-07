@@ -1,332 +1,191 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>棒球比賽統計</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+  <title>球員成績表（含照片）</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; }
-    .container { max-width: 1400px; margin: auto; }
-    .search-bar { margin-bottom: 20px; }
-    .search-bar input { padding: 8px; width: 200px; margin-right: 10px; }
-    table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    th, td { padding: 10px; text-align: center; border: 1px solid #ddd; }
-    th { background: #4CAF50; color: white; cursor: pointer; position: sticky; top: 0; z-index: 10; }
-    th:hover { background: #45a049; }
-    .fixed-col { position: sticky; left: 0; background: #f8f8f8; z-index: 5; }
-    .fixed-col-header { position: sticky; left: 0; background: #4CAF50; z-index: 15; }
-    .highlight { background-color: #d4edda; }
-    .sort-icon { margin-left: 5px; }
-    .table-container { overflow-x: auto; max-height: 600px; }
-    .player-name { cursor: pointer; color: #0066cc; }
-    .player-name:hover { text-decoration: underline; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; }
-    .modal.show { display: flex; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 20px; border-radius: 5px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-    .modal-content h2 { margin-top: 0; }
-    .modal-content table { width: 100%; border-collapse: collapse; }
-    .modal-content th, .modal-content td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    .modal-content th { background: #f4f4f4; }
-    .close-btn { float: right; cursor: pointer; font-size: 24px; }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th.sticky, td.sticky { position: sticky; left: 0; background: #f9f9f9; z-index: 2; }
+    th { cursor: pointer; background: #eee; }
+    td.highlight { background-color: #ffe066; font-weight: bold; }
+    img.photo-thumb { width: 40px; height: 40px; border-radius: 50%; vertical-align: middle; margin-right: 5px; }
+
+    #modal {
+      display: none;
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 20px;
+      border: 1px solid #333;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      max-width: 400px;
+      z-index: 100;
+    }
+
+    #modal img.photo-large {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: block;
+      margin: 0 auto 15px;
+    }
+
+    #modalClose {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-    // Defining the main React component
-    function BaseballStats() {
-      const [data, setData] = React.useState([]);
-      const [search, setSearch] = React.useState('');
-      const [sortConfig, setSortConfig] = React.useState({ key: null, direction: 'asc' });
-      const [selectedPlayer, setSelectedPlayer] = React.useState(null);
-      const [maxValues, setMaxValues] = React.useState({});
 
-      // Loading and parsing CSV data
-      React.useEffect(() => {
-        const csvData = `背號,姓名,安打數,打數,打擊率,打點,一壘安打,二壘安打,三壘安打,全壘打,三振,四壞球,上壘率,長打率
-59,小周,16,29,0.5517241379310345,4,12,3,1,0,1,4,0.6060606060606061,0.7241379310344828
-27,峰榮,12,26,0.46153846153846156,6,10,1,0,1,0,1,0.48148148148148145,0.6153846153846154
-14,小花,8,18,0.4444444444444444,5,7,1,0,0,1,4,0.5454545454545454,0.5
-1,嘉桓,14,22,0.6363636363636364,6,14,0,0,0,0,3,0.68,0.6363636363636364
-69,舜子,9,18,0.5,5,8,0,1,0,0,2,0.55,0.6111111111111112
-6,柏誠,10,29,0.3448275862068966,7,9,0,1,0,3,2,0.3870967741935484,0.41379310344827586
-33,江大,3,10,0.3,0,3,0,0,0,2,3,0.46153846153846156,0.3
-95,光義,5,20,0.25,1,3,1,1,0,3,2,0.3181818181818182,0.4
-41,逸宏,9,25,0.36,4,6,1,1,1,1,6,0.4838709677419355,0.6
-58,王大,3,15,0.2,4,3,0,0,0,1,3,0.3333333333333333,0.2
-25,子誠,3,7,0.42857142857142855,2,1,2,0,0,0,2,0.5555555555555556,0.7142857142857143
-3,致濠,0,9,0,0,0,0,0,0,4,0,0,0
-39,懷恩,5,11,0.45454545454545453,2,5,0,0,0,2,3,0.5714285714285714,0.45454545454545453
-82,正憲,7,18,0.3888888888888889,2,7,0,0,0,1,5,0.5217391304347826,0.3888888888888889
-5,與倫,4,18,0.2222222222222222,2,4,0,0,0,3,1,0.2631578947368421,0.2222222222222222
-99,良全,5,10,0.5,2,5,0,0,0,3,1,0.5454545454545454,0.5
-17,盟堯,7,15,0.4666666666666667,3,6,1,1,0,0,0,0.4666666666666667,0.7333333333333333
-22,亦凌,11,21,0.5238095238095238,12,9,0,2,0,1,1,0.5454545454545454,0.7142857142857143
-44,阿賢,7,13,0.5384615384615384,3,6,0,0,0,0,2,0.6,0.46153846153846156
-28,証然,2,10,0.2,1,2,0,0,0,0,4,0.42857142857142855,0.2
-55,威吾,5,14,0.35714285714285715,2,5,0,0,0,0,2,0.4375,0.35714285714285715
-51,Allen,4,8,0.5,1,4,0,0,0,0,0,0.5,0.5
-?,興顥,3,10,0.3,3,2,0,1,0,1,0,0.3,0.5
-Total, ,152,376,0.40425531914893614,77,131,10,9,2,27,51,0.47540983606557374,0.4946808510638298`;
+<h1>球員成績表（含照片）</h1>
+<label><input type="checkbox" id="freezeCols" checked> 凍結背號與姓名欄</label>
+<br/><br/>
+<div style="overflow:auto; max-height:80vh;">
+  <table id="statsTable">
+    <thead><tr id="headerRow"></tr></thead>
+    <tbody id="bodyRows"></tbody>
+    <tfoot><tr id="avgRow"></tr></tfoot>
+  </table>
+</div>
 
-        Papa.parse(csvData, {
-          header: true,
-          skipEmptyLines: true,
-          transform: (value, header) => {
-            let cleaned = value.trim().replace(/^"|"$/g, '');
-            if (['安打數', '打數', '打點', '一壘安打', '二壘安打', '三壘安打', '全壘打', '三振', '四壞球'].includes(header)) {
-              return cleaned === '' ? 0 : parseInt(cleaned, 10);
-            }
-            if (['打擊率', '上壘率', '長打率'].includes(header)) {
-              return cleaned === '' ? 0 : parseFloat(cleaned);
-            }
-            return cleaned;
-          },
-          complete: (results) => {
-            const players = results.data.filter(row => row['姓名'] !== '').map(row => ({
-              ...row,
-              OPS: (row['上壘率'] + row['長打率']).toFixed(3)
-            }));
-            const averages = calculateAverages(players);
-            const maxValues = calculateMaxValues(players);
-            setMaxValues(maxValues);
-            setData([...players, { 背號: '平均', 姓名: '', ...averages }]);
-          },
-          error: (err) => console.error(err)
-        });
-      }, []);
+<!-- Modal -->
+<div id="modal">
+  <img src="" alt="照片" id="modalPhoto" class="photo-large">
+  <div id="modalContent"></div>
+  <button id="modalClose">關閉</button>
+</div>
 
-      // Calculating maximum values for each column
-      const calculateMaxValues = (players) => {
-        return players.reduce((acc, row) => {
-          ['安打數', '打數', '打擊率', '打點', '一壘安打', '二壘安打', '三壘安打', '全壘打', '三振', '四壞球', '上壘率', '長打率', 'OPS'].forEach(header => {
-            const value = parseFloat(row[header]) || 0;
-            acc[header] = Math.max(acc[header] || 0, value);
-          });
-          return acc;
-        }, {});
-      };
+<script>
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQltivRfnLpZ31pQaugHsIJWHlDqdkks4qRriATwyig2G1XZfjcszSjYrWYkpEbBlsFYZFi_9s2FLhu/pub?output=csv';
 
-      // Calculating averages for each column
-      const calculateAverages = (players) => {
-        const totals = players.reduce((acc, row) => {
-          acc['安打數'] = (acc['安打數'] || 0) + (row['安打數'] || 0);
-          acc['打數'] = (acc['打數'] || 0) + (row['打數'] || 0);
-          acc['打點'] = (acc['打點'] || 0) + (row['打點'] || 0);
-          acc['一壘安打'] = (acc['一壘安打'] || 0) + (row['一壘安打'] || 0);
-          acc['二壘安打'] = (acc['二壘安打'] || 0) + (row['二壘安打'] || 0);
-          acc['三壘安打'] = (acc['三壘安打'] || 0) + (row['三壘安打'] || 0);
-          acc['全壘打'] = (acc['全壘打'] || 0) + (row['全壘打'] || 0);
-          acc['三振'] = (acc['三振'] || 0) + (row['三振'] || 0);
-          acc['四壞球'] = (acc['四壞球'] || 0) + (row['四壞球'] || 0);
-          acc['打擊率'] = (acc['打擊率'] || 0) + (row['打擊率'] || 0);
-          acc['上壘率'] = (acc['上壘率'] || 0) + (row['上壘率'] || 0);
-          acc['長打率'] = (acc['長打率'] || 0) + (row['長打率'] || 0);
-          acc['OPS'] = (acc['OPS'] || 0) + (parseFloat(row['OPS']) || 0);
-          return acc;
-        }, {});
-        const count = players.length;
-        return {
-          安打數: (totals['安打數'] / count).toFixed(2),
-          打數: (totals['打數'] / count).toFixed(2),
-          打擊率: (totals['打擊率'] / count).toFixed(3),
-          打點: (totals['打點'] / count).toFixed(2),
-          一壘安打: (totals['一壘安打'] / count).toFixed(2),
-          二壘安打: (totals['二壘安打'] / count).toFixed(2),
-          三壘安打: (totals['三壘安打'] / count).toFixed(2),
-          全壘打: (totals['全壘打'] / count).toFixed(2),
-          三振: (totals['三振'] / count).toFixed(2),
-          四壞球: (totals['四壞球'] / count).toFixed(2),
-          上壘率: (totals['上壘率'] / count).toFixed(3),
-          長打率: (totals['長打率'] / count).toFixed(3),
-          OPS: (totals['OPS'] / count).toFixed(3)
-        };
-      };
+let rawData = [], headers = [];
 
-      // Handling sorting
-      const handleSort = (key) => {
-        let direction = 'asc';
-        if (sortConfig.key === key && sortConfig.direction === 'asc') {
-          direction = 'desc';
-        }
-        setSortConfig({ key, direction });
-      };
+Papa.parse(CSV_URL, {
+  download: true,
+  dynamicTyping: true,
+  complete: results => {
+    rawData = results.data.filter(r => r.length && r.some(c => c !== null && c !== ''));
+    headers = rawData.shift();
+    headers.push('OPS', 'OPS+');
+    computeOPSandOPSPlus();
+    initTable();
+    renderRows();
+    computeAvg();
+  },
+  error: err => console.error(err)
+});
 
-      // Handling player modal
-      const showPlayerModal = (player) => {
-        if (player['姓名']) {
-          setSelectedPlayer(player);
-        }
-      };
+function computeOPSandOPSPlus() {
+  rawData.forEach(row => {
+    const obp = parseFloat(row[headers.indexOf('OBP')]) || 0;
+    const slg = parseFloat(row[headers.indexOf('SLG')]) || 0;
+    row[headers.length - 2] = obp + slg; // OPS
+  });
+  const opsList = rawData.map(r=>r[headers.length - 2]);
+  const avgOPS = opsList.reduce((a,b)=>a+b,0)/opsList.length;
+  rawData.forEach(row => {
+    const ops = row[headers.length - 2];
+    row[headers.length - 1] = Math.round(avgOPS>0 ? 100*ops/avgOPS : 0); // OPS+
+  });
+}
 
-      const closeModal = () => {
-        setSelectedPlayer(null);
-      };
+function initTable() {
+  const tr = document.getElementById('headerRow');
+  tr.innerHTML = '';
+  headers.forEach((h,i)=>{
+    const th = document.createElement('th');
+    th.textContent = h;
+    th.dataset.col = i;
+    th.addEventListener('click', ()=>sortByColumn(i));
+    if (i===0||i===1) th.classList.add('sticky');
+    tr.appendChild(th);
+  });
+}
 
-      // Filtering and sorting data
-      const filteredData = data.filter(row =>
-        (row['姓名']?.toLowerCase().includes(search.toLowerCase()) ||
-         row['背號']?.toString().includes(search))
-      );
+function renderRows() {
+  const tbody = document.getElementById('bodyRows');
+  tbody.innerHTML = '';
 
-      const sortedData = [...filteredData].sort((a, b) => {
-        if (sortConfig.key) {
-          const aValue = a[sortConfig.key] || 0;
-          const bValue = b[sortConfig.key] || 0;
-          if (sortConfig.direction === 'asc') {
-            return aValue > bValue ? 1 : -1;
-          } else {
-            return aValue < bValue ? 1 : -1;
-          }
-        }
-        return 0;
-      });
+  const maxPerColumn = {};
+  headers.forEach((_,i)=>{
+    const nums = rawData.map(r=>r[i]).filter(v=>typeof v==='number');
+    if (nums.length) maxPerColumn[i] = Math.max(...nums);
+  });
 
-      // Defining table headers
-      const headers = [
-        '背號', '姓名', '安打數', '打數', '打擊率', '打點', '一壘安打', '二壘安打',
-        '三壘安打', '全壘打', '三振', '四壞球', '上壘率', '長打率', 'OPS'
-      ];
+  rawData.forEach(row=>{
+    const tr = document.createElement('tr');
+    row.forEach((cell,i)=>{
+      const td = document.createElement('td');
+      if (i===1 && headers.includes('Photo')) {
+        const photoUrl = row[headers.indexOf('Photo')];
+        if (photoUrl) {
+          td.innerHTML = `<img src="${photoUrl}" class="photo-thumb"> ${row[1]}`;
+        } else td.textContent = row[1];
+      } else {
+        td.textContent = typeof cell==='number' ? cell.toFixed(3) : cell;
+      }
+      if (i===0||i===1) td.classList.add('sticky');
+      if (i===1) {
+        td.querySelector('a,td').addEventListener?.('click',()=>showModal(row));
+        td.addEventListener('click',()=>showModal(row));
+      }
+      if (typeof cell==='number' && maxPerColumn[i]===cell) {
+        td.classList.add('highlight');
+      }
+      tr.appendChild(td);
+    });
+    tr.addEventListener('click',()=>showModal(row));
+    tbody.appendChild(tr);
+  });
+}
 
-      // Rendering the component
-      return (
-        <div className="container">
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="輸入姓名或背號搜尋"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="table-container">
-            <table>
-              <thead>
-                <tr>
-                  {headers.map((header, index) => (
-                    <th
-                      key={header}
-                      onClick={() => handleSort(header)}
-                      className={index < 2 ? 'fixed-col-header' : ''}
-                    >
-                      {header}
-                      {sortConfig.key === header && (
-                        <span className="sort-icon">
-                          {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                        </span>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {sortedData.map((row, index) => (
-                  <tr key={index}>
-                    {headers.map((header, i) => (
-                      <td
-                        key={`${index}-${header}`}
-                        className={`${i < 2 ? 'fixed-col' : ''} ${
-                          row[header] && parseFloat(row[header]) === maxValues[header] && row['姓名'] ? 'highlight' : ''
-                        }`}
-                      >
-                        {header === '姓名' && row['姓名'] ? (
-                          <span
-                            className="player-name"
-                            onClick={() => showPlayerModal(row)}
-                          >
-                            {row[header]}
-                          </span>
-                        ) : typeof row[header] === 'number' && (header.includes('率') || header === 'OPS') ? (
-                          row[header].toFixed(3)
-                        ) : (
-                          row[header]
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {selectedPlayer && (
-            <div className="modal show">
-              <div className="modal-content">
-                <span className="close-btn" onClick={closeModal}>×</span>
-                <h2>{selectedPlayer['姓名']} (背號: {selectedPlayer['背號']})</h2>
-                <table>
-                  <tbody>
-                    <tr>
-                      <th>安打數 / 打數</th>
-                      <td>{selectedPlayer['安打數']} / {selectedPlayer['打數']}</td>
-                    </tr>
-                    <tr>
-                      <th>打擊率</th>
-                      <td>{selectedPlayer['打擊率'].toFixed(3)}</td>
-                    </tr>
-                    <tr>
-                      <th>上壘率</th>
-                      <td>{selectedPlayer['上壘率'].toFixed(3)}</td>
-                    </tr>
-                    <tr>
-                      <th>長打率</th>
-                      <td>{selectedPlayer['長打率'].toFixed(3)}</td>
-                    </tr>
-                    <tr>
-                      <th>OPS</th>
-                      <td>{selectedPlayer['OPS']}</td>
-                    </tr>
-                    <tr>
-                      <th>打點</th>
-                      <td>{selectedPlayer['打點']}</td>
-                    </tr>
-                    <tr>
-                      <th>一壘安打</th>
-                      <td>{selectedPlayer['一壘安打']}</td>
-                    </tr>
-                    <tr>
-                      <th>二壘安打</th>
-                      <td>{selectedPlayer['二壘安打']}</td>
-                    </tr>
-                    <tr>
-                      <th>三壘安打</th>
-                      <td>{selectedPlayer['三壘安打']}</td>
-                    </tr>
-                    <tr>
-                      <th>全壘打</th>
-                      <td>{selectedPlayer['全壘打']}</td>
-                    </tr>
-                    <tr>
-                      <th>三振</th>
-                      <td>{selectedPlayer['三振']}</td>
-                    </tr>
-                    <tr>
-                      <th>四壞球</th>
-                      <td>{selectedPlayer['四壞球']}</td>
-                    </tr>
-                    <tr>
-                      <th>每次打數打點</th>
-                      <td>{(selectedPlayer['打點'] / selectedPlayer['打數']).toFixed(3)}</td>
-                    </tr>
-                    <tr>
-                      <th>每次打數安打</th>
-                      <td>{(selectedPlayer['安打數'] / selectedPlayer['打數']).toFixed(3)}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
-      );
+function computeAvg() {
+  const tr = document.getElementById('avgRow');
+  tr.innerHTML = '';
+  headers.forEach((_,i)=>{
+    const td = document.createElement('td');
+    if (i===0) td.textContent='平均';
+    else {
+      const nums = rawData.map(r=>r[i]).filter(v=>typeof v==='number');
+      const avg = nums.length ? nums.reduce((a,b)=>a+b)/nums.length : '';
+      td.textContent = avg ? avg.toFixed(3) : '';
     }
+    if (i===0||i===1) td.classList.add('sticky');
+    tr.appendChild(td);
+  });
+}
 
-    // Rendering the React app
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<BaseballStats />);
-  </script>
+function sortByColumn(i) {
+  rawData.sort((a,b)=>{
+    const da=a[i], db=b[i];
+    if (typeof da==='number'&&typeof db==='number') return db-da;
+    return String(da).localeCompare(db);
+  });
+  renderRows();
+}
+
+function showModal(row) {
+  const modal = document.getElementById('modal');
+  document.getElementById('modalPhoto').src = row[headers.indexOf('Photo')] || '';
+  const content = document.getElementById('modalContent');
+  content.innerHTML = '';
+  headers.forEach((h,i)=>{
+    if (h==='Photo') return;
+    const p = document.createElement('p');
+    p.textContent = `${h}: ${typeof row[i]==='number'?row[i].toFixed(3):row[i]}`;
+    content.appendChild(p);
+  });
+  modal.style.display='block';
+}
+document.getElementById('modalClose').addEventListener('click',()=>{
+  document.getElementById('modal').style.display='none';
+});
+</script>
+
 </body>
 </html>
